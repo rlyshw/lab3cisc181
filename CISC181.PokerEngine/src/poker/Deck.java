@@ -9,23 +9,32 @@ public class Deck {
 
 	public Deck() {
 
-		//	Create an ArrayList of Cards, add each card
+		// Create an ArrayList of Cards, add each card
 		ArrayList<Card> MakingDeck = new ArrayList<Card>();
 		for (short i = 0; i <= 3; i++) {
-			eSuit SuitValue = eSuit.values()[i];			
+			eSuit SuitValue = eSuit.values()[i];
 			for (short j = 0; j <= 12; j++) {
-				eRank RankValue = eRank.values()[j];				
-				Card NewCard = new Card(SuitValue,RankValue);
+				eRank RankValue = eRank.values()[j];
+				Card NewCard = new Card(SuitValue, RankValue);
 				MakingDeck.add(NewCard);
 			}
 		}
-		
-		//	Set the instance variable
+
+		// Set the instance variable
 		cards = MakingDeck;
-		
-		//	Shuffle the cards
+
+		// Shuffle the cards
 		Collections.shuffle(cards);
-		
+
+	}
+
+	public Deck(int joker) {
+		this();
+		for (int i = 0; i < joker; i++) {
+			this.cards.add(new Card(eSuit.JOKER, eRank.JOKER, true));
+		}
+
+		Collections.shuffle(this.cards);
 	}
 
 	public Card drawFromDeck() {
