@@ -16,6 +16,7 @@ public class Hand {
 	private boolean Flush;
 	private boolean Straight;
 	private boolean Ace;
+	private boolean Joker;
 
 	public Hand(Deck d) {
 		ArrayList<Card> Import = new ArrayList<Card>();
@@ -68,6 +69,11 @@ public class Hand {
 		// Sort the cards!
 		Collections.sort(CardsInHand, Card.CardRank);
 
+		if ((CardsInHand.get(eCardNo.FourthCard.getCardNo()).getRank() == eRank.JOKER) || (CardsInHand.get(eCardNo.FifthCard.getCardNo()).getRank() == eRank.JOKER)){
+			Joker = true;
+		}
+	
+		
 		// Ace Evaluation
 		if (CardsInHand.get(eCardNo.FirstCard.getCardNo()).getRank() == eRank.ACE) {
 			Ace = true;
@@ -82,14 +88,15 @@ public class Hand {
 		} else {
 			Flush = false;
 		}
-		if (Ace){
-			if(CardsInHand.get(eCardNo.FirstCard.getCardNo()).getRank() == CardsInHand.get(eCardNo.FifthCard.getCardNo()).getRank());
 		
-		}
-		else{
+		// 5 of a kind.
+		if (Joker){
 			if(CardsInHand.get(eCardNo.FirstCard.getCardNo()).getRank() == CardsInHand.get(eCardNo.FifthCard.getCardNo()).getRank());
 			
 		}
+		ScoreHand(eHandStrength.FiveOfAKind, 0, 0, 0);
+		
+		
 		// Straight Evaluation
 		if (Ace) {
 			// Looks for Ace, King, Queen, Jack, 10
