@@ -82,7 +82,14 @@ public class Hand {
 		} else {
 			Flush = false;
 		}
-
+		if (Ace){
+			if(CardsInHand.get(eCardNo.FirstCard.getCardNo()).getRank() == CardsInHand.get(eCardNo.FifthCard.getCardNo()).getRank());
+		
+		}
+		else{
+			if(CardsInHand.get(eCardNo.FirstCard.getCardNo()).getRank() == CardsInHand.get(eCardNo.FifthCard.getCardNo()).getRank());
+			
+		}
 		// Straight Evaluation
 		if (Ace) {
 			// Looks for Ace, King, Queen, Jack, 10
@@ -225,6 +232,8 @@ public class Hand {
 	/**
 	 * Custom sort to figure the best hand in an array of hands
 	 */
+	
+	
 	public static Comparator<Hand> HandRank = new Comparator<Hand>() {
 
 		public int compare(Hand h1, Hand h2) {
