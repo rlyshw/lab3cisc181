@@ -14,6 +14,8 @@ public final class Card {
 	{
 	}
 	
+	
+	
 	/**
 	 * Create a new card of a given rank and suit.
 	 * @param suit
@@ -27,6 +29,11 @@ public final class Card {
 		Suit = suit; 
 		Rank = rank; 
 		Wild = wild;
+	}
+	
+	@Override
+	public String toString(){
+		return this.getRank()+" of "+this.getSuit();
 	}
 
 	/**
