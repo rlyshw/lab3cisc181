@@ -69,6 +69,7 @@ public class Hand {
 		// Sort the cards!
 		Collections.sort(CardsInHand, Card.CardRank);
 
+		// Joker Evaluation
 		if ((CardsInHand.get(eCardNo.FourthCard.getCardNo()).getRank() == eRank.JOKER) || (CardsInHand.get(eCardNo.FifthCard.getCardNo()).getRank() == eRank.JOKER)){
 			Joker = true;
 		}
