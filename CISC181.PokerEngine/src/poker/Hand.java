@@ -92,12 +92,11 @@ public class Hand {
 		
 		// 5 of a kind.
 		if (Joker){
-			if(CardsInHand.get(eCardNo.FirstCard.getCardNo()).getRank() == CardsInHand.get(eCardNo.FifthCard.getCardNo()).getRank());
-			
+			if(CardsInHand.get(eCardNo.FirstCard.getCardNo()).getRank() == CardsInHand.get(eCardNo.FifthCard.getCardNo()).getRank()) {
+			ScoreHand(eHandStrength.FiveOfAKind, CardsInHand.get(eCardNo.FirstCard.getCardNo()).getRank().getRank(), 0, 0);
+			}
 		}
-		ScoreHand(eHandStrength.FiveOfAKind, 0, 0, 0);
-		
-		
+
 		// Straight Evaluation
 		if (Ace) {
 			// Looks for Ace, King, Queen, Jack, 10
@@ -130,10 +129,17 @@ public class Hand {
 		}
 
 		// Evaluates the hand type
+		if (Straight == true && Flush == true && Joker
+				&& CardsInHand.get(eCardNo.FifthCard.getCardNo()).getRank() == eRank.TEN && Ace) {
+			ScoreHand(eHandStrength.NaturalRoyalFlush, 0, 0, 0);
+		}
+		// Royal Flush
 		if (Straight == true && Flush == true
 				&& CardsInHand.get(eCardNo.FifthCard.getCardNo()).getRank() == eRank.TEN && Ace) {
 			ScoreHand(eHandStrength.RoyalFlush, 0, 0, 0);
 		}
+		
+		//
 
 		// Straight Flush
 		else if (Straight == true && Flush == true) {
