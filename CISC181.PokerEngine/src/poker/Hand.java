@@ -18,6 +18,12 @@ public class Hand {
 	private boolean Ace;
 	private boolean Joker;
 
+	public boolean isJoker() {
+		return Joker;
+	}
+
+
+
 	public Hand(Deck d) {
 		ArrayList<Card> Import = new ArrayList<Card>();
 		for (int x = 0; x < 5; x++) {
@@ -31,6 +37,18 @@ public class Hand {
 	public ArrayList<Card> getCards() {
 		return CardsInHand;
 	}
+
+	@Override
+	public String toString() {
+		String retStr = "";
+		for(Card c : this.getCards()){
+			retStr+=c.toString();
+			retStr+=", ";
+		}
+		return retStr;
+	}
+
+
 
 	public int getHandStrength() {
 		return HandStrength;
@@ -52,26 +70,34 @@ public class Hand {
 		return Ace;
 	}
 	
-	public static Hand PickBestHand(ArrayList<Hand> Hands) {
-		ArrayList<Hand> evaledHands = new ArrayList<Hand>();
-		for(Hand h : Hands){
+	public static Hand PickBestHand(ArrayList<Hand> hands) {
+		//ArrayList<Hand> evaledHands = new ArrayList<Hand>();
+		for(Hand h : hands){
 			h.EvalHand();
-			evaledHands.add(h);
+			//evaledHands.add(h);
 		}
-		Collections.sort(evaledHands, Hand.HandRank);
-		// we do need a way to handle ties but this interferes with my joker method(throws exHand)
-		//if(evaledHands.get(0)==evaledHands.get(1)) throw new exHand();
-		return evaledHands.get(0);
+		Collections.sort(hands, Hand.HandRank);
+		//if(evaledHands.get(0)==evaledHands.get(1)) throw new exHand(evaledHands.get(0));
+		return hands.get(0);
 	}
 
 	public static Hand EvalHand(ArrayList<Card> SeededHand){		
-		Deck d = new Deck();
-		Hand h = new Hand(d);
-		h.CardsInHand = SeededHand;
-		h.EvalHand();
+		ArrayList<Card> fiftyTwoCards = new ArrayList<Card>();
+		fiftyTwoCards = new Deck().getCards();
+		ArrayList<Hand> jokerSubs = new ArrayList<Hand>();
+		for(Card c : fiftyTwoCards){
+			Deck crapDeck = new Deck();
+			Hand h = new Hand(crapDeck);
+			h.CardsInHand.set(0, c);
+			for(int i=1; i<SeededHand.size();i++){
+				h.CardsInHand.set(i,SeededHand.get(i));
+			}
+			//h.EvalHand();
+			jokerSubs.add(h);
+		}
 		
-		return h;
-	}	
+		return Hand.PickBestHand(jokerSubs);
+	}
 	
 	public void EvalHand(){
 		// Evaluates if the hand is a flush and/or straight then figures out
@@ -79,6 +105,7 @@ public class Hand {
 		// Sort the cards!
 		Collections.sort(CardsInHand, Card.CardRank);
 		// Joker Evaluation
+		/* So I don't want to do this in the evalHand method because accidental recursion
 		if(CardsInHand.get(eCardNo.FirstCard.getCardNo()).getRank() == eRank.JOKER){
 			// so this assigns the first position to every card and makes cardsinhand the highest possible value. doesnt seeem to work
 			Joker = true;
@@ -91,10 +118,15 @@ public class Hand {
 				testingList.add(h);
 			}
 			CardsInHand = PickBestHand(testingList).CardsInHand;
-		}
+		}*/
 		// Ace Evaluation
 		if (CardsInHand.get(eCardNo.FirstCard.getCardNo()).getRank() == eRank.ACE) {
 			Ace = true;
+		}
+		
+		// Joker Evaluation
+		if (CardsInHand.get(eCardNo.FirstCard.getCardNo()).getRank() == eRank.JOKER){
+			Joker = true;
 		}
 
 		// Flush Evaluation
@@ -352,7 +384,8 @@ public class Hand {
 			int result = 0;
 
 			result = h2.HandStrength - h1.HandStrength;
-
+			System.out.println(h2.HandStrength+":"+h2.toString());
+			System.out.println(h1.HandStrength+":"+h1.toString());
 			if (result != 0) {
 				return result;
 			}

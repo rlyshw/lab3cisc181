@@ -16,18 +16,17 @@ public class PlayHand {
 			for (int hCnt = 0; hCnt <= 1; hCnt++) {
 				Hand h = new Hand(d);
 				Collections.sort(h.getCards(),Card.CardRank);
-				for(Card c : h.getCards()){
-					System.out.println(c.toString());
-				}
+				System.out.println(h.toString());
 				System.out.println("");
 				h.EvalHand();
+				if(h.isJoker()){
+					h.EvalHand(h.getCards());
+				}
 				Hands.add(h);
 			}
 			Collections.sort(Hands, Hand.HandRank);
 			for(Hand h : Hands){
-				for(Card c : h.getCards()){
-					System.out.println(c.toString());
-				}
+				System.out.println(h.toString());
 				System.out.println("");
 			}
 			System.out
@@ -46,9 +45,7 @@ public class PlayHand {
 
 			System.out.print("\n");
 			System.out.print("Winning hand: ");
-			for(Card c : Hands.get(0).getCards()){
-				System.out.print(c.toString()+';');
-			}
+			System.out.println(Hands.get(0).toString());
 		}
 
 	}
