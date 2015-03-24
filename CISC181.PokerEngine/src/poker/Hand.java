@@ -7,6 +7,7 @@ import java.util.Comparator;
 public class Hand {
 	private ArrayList<Card> CardsInHand;
 
+	private ArrayList<Card> bestHand;
 	private int HandStrength;
 	private int HiHand;
 	private int LoHand;
@@ -16,13 +17,15 @@ public class Hand {
 	private boolean Flush;
 	private boolean Straight;
 	private boolean Ace;
-	private boolean Joker;
 
-	public boolean isJoker() {
-		return Joker;
+	private int Natural;
+	
+	// a dummy deck with all 52 cards
+	private static Deck fiftyTwoCards = new Deck();
+
+	public Hand(ArrayList<Card> setCards) {
+		this.CardsInHand = setCards;
 	}
-
-
 
 	public Hand(Deck d) {
 		ArrayList<Card> Import = new ArrayList<Card>();
@@ -30,8 +33,79 @@ public class Hand {
 			Import.add(d.drawFromDeck());
 		}
 		CardsInHand = Import;
+		
+		handleJoker();
 	}
 	
+
+	private void handleJoker() {
+		ArrayList<Hand> playerHand = new ArrayList<Hand>();
+		playerHand.add(this); // sets playerHand to values of this instance
+
+		// Finds all possible combinations of the player's cards, 
+		// including combos from jokers
+		int cardNo = 0;		
+		for (Card c : this.getCards()) {
+			playerHand = explodeHands(playerHand, cardNo);
+			cardNo++;
+		}
+		
+		//if the cards in hand includes a joker, the hand is not natural
+		setNatural();
+		
+		System.out.println("number of possible hands: "+ playerHand.size());
+		
+		//evaluates every possible hand
+		for(Hand h : playerHand) {
+			h.EvalHand();
+		}
+		
+		// sorts the possible hands in order from best to worst
+		Collections.sort(playerHand, Hand.HandRank);
+		
+		//set best hand and associated values (hiHand, loHand, kicker, etc.)
+		this.setBestHand(playerHand.get(0).getCards());
+		this.HandStrength = playerHand.get(0).getHandStrength();
+		this.HiHand = playerHand.get(0).getHighPairStrength();
+		this.LoHand = playerHand.get(0).getLowPairStrength();
+		this.Kicker = playerHand.get(0).getKicker();
+
+	}
+
+
+	private ArrayList<Hand> explodeHands(ArrayList<Hand> playerHands, int cardNo) {
+		ArrayList<Hand> possibleHands = new ArrayList<Hand>();
+		
+		for(Hand h : playerHands) {
+			ArrayList<Card> cards = h.getCards();
+			if(cards.get(cardNo).getRank() == eRank.JOKER) {
+				
+				for(Card jokerSub : fiftyTwoCards.getCards()) {
+					ArrayList<Card> subCards = new ArrayList<Card>(); // new array for joker sub
+					subCards.add(jokerSub); // add the joker sub to the hand
+
+					// add the non-jokers to the hand with the joker sub
+					for (int a = 0; a < 5; a++) {
+						if (cardNo != a) {
+							subCards.add(h.getCards().get(a));
+						}
+					}
+					Hand subHand = new Hand(subCards); // new hand with the joker sub
+					
+					// add the new hand to the list of possible hands
+					possibleHands.add(subHand); 
+				}
+			} 
+			// if the hand in question does not have jokers, 
+			// add it back into the list of possible hands
+			else {
+				possibleHands.add(h);
+			}
+		}
+		
+		return possibleHands;
+	}
+
 
 
 	public ArrayList<Card> getCards() {
@@ -48,7 +122,25 @@ public class Hand {
 		return retStr;
 	}
 
+	public ArrayList<Card> getBestHand() {
+		return bestHand;
+	}
+	
+	public void setBestHand(ArrayList<Card> arrayList) {
+		this.bestHand = arrayList;
+	}
 
+	public int getNatural() {
+		return Natural;
+	}
+	
+	private void setNatural() {
+		for (Card c : CardsInHand) {
+			if (c.getRank().getRank() == eRank.JOKER.getRank()) {
+				this.Natural = 0;
+			}
+		}
+	}
 
 	public int getHandStrength() {
 		return HandStrength;
@@ -70,33 +162,14 @@ public class Hand {
 		return Ace;
 	}
 	
-	public static Hand PickBestHand(ArrayList<Hand> hands) {
-		//ArrayList<Hand> evaledHands = new ArrayList<Hand>();
-		for(Hand h : hands){
-			h.EvalHand();
-			//evaledHands.add(h);
-		}
-		Collections.sort(hands, Hand.HandRank);
-		//if(evaledHands.get(0)==evaledHands.get(1)) throw new exHand(evaledHands.get(0));
-		return hands.get(0);
-	}
+	
+	public static Hand EvalHand(ArrayList<Card> seededHand) {
+		Deck d = new Deck();
+		Hand hand = new Hand(d);
+		hand.CardsInHand = seededHand;
+		hand.handleJoker();
 
-	public static Hand EvalHand(ArrayList<Card> SeededHand){		
-		ArrayList<Card> fiftyTwoCards = new ArrayList<Card>();
-		fiftyTwoCards = new Deck().getCards();
-		ArrayList<Hand> jokerSubs = new ArrayList<Hand>();
-		for(Card c : fiftyTwoCards){
-			Deck crapDeck = new Deck();
-			Hand h = new Hand(crapDeck);
-			h.CardsInHand.set(0, c);
-			for(int i=1; i<SeededHand.size();i++){
-				h.CardsInHand.set(i,SeededHand.get(i));
-			}
-			//h.EvalHand();
-			jokerSubs.add(h);
-		}
-		
-		return Hand.PickBestHand(jokerSubs);
+		return hand;
 	}
 	
 	public void EvalHand(){
@@ -104,29 +177,10 @@ public class Hand {
 		// the hand's strength attributes
 		// Sort the cards!
 		Collections.sort(CardsInHand, Card.CardRank);
-		// Joker Evaluation
-		/* So I don't want to do this in the evalHand method because accidental recursion
-		if(CardsInHand.get(eCardNo.FirstCard.getCardNo()).getRank() == eRank.JOKER){
-			// so this assigns the first position to every card and makes cardsinhand the highest possible value. doesnt seeem to work
-			Joker = true;
-			Deck plainDeck = new Deck();
-			Hand h = new Hand(plainDeck);
-			ArrayList<Hand> testingList = new ArrayList<Hand>();
-			h.CardsInHand = CardsInHand;
-			for(Card c : plainDeck.getCards()){
-				h.CardsInHand.set(0, c);
-				testingList.add(h);
-			}
-			CardsInHand = PickBestHand(testingList).CardsInHand;
-		}*/
+	
 		// Ace Evaluation
 		if (CardsInHand.get(eCardNo.FirstCard.getCardNo()).getRank() == eRank.ACE) {
 			Ace = true;
-		}
-		
-		// Joker Evaluation
-		if (CardsInHand.get(eCardNo.FirstCard.getCardNo()).getRank() == eRank.JOKER){
-			Joker = true;
 		}
 
 		// Flush Evaluation
@@ -369,9 +423,9 @@ public class Hand {
 		this.LoHand = LoHand;
 		this.Kicker = Kicker;
 		this.bScored = true;
-
 	}
 
+	
 	/**
 	 * Custom sort to figure the best hand in an array of hands
 	 */

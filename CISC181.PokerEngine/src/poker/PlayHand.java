@@ -19,7 +19,7 @@ public class PlayHand {
 				System.out.println(h.toString());
 				System.out.println("");
 				h.EvalHand();
-				if(h.isJoker()){
+				if(h.getNatural() == 1){
 					h.EvalHand(h.getCards());
 				}
 				Hands.add(h);
