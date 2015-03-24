@@ -438,8 +438,6 @@ public class Hand {
 			int result = 0;
 
 			result = h2.HandStrength - h1.HandStrength;
-			System.out.println(h2.HandStrength+":"+h2.toString());
-			System.out.println(h1.HandStrength+":"+h1.toString());
 			if (result != 0) {
 				return result;
 			}
