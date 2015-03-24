@@ -18,7 +18,7 @@ public class Hand {
 	private boolean Straight;
 	private boolean Ace;
 
-	private int Natural;
+	private int Natural = 1;
 	
 	// a dummy deck with all 52 cards
 	private static Deck fiftyTwoCards = new Deck();

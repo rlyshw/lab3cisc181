@@ -45,7 +45,7 @@ public class PlayHand {
 
 			System.out.print("\n");
 			System.out.print("Winning hand: ");
-			System.out.println(Hands.get(0).toString());
+			//System.out.println(Hands.get(0).toString());
 		}
 
 	}
