@@ -23,10 +23,6 @@ public class Hand {
 	// a dummy deck with all 52 cards
 	private static Deck fiftyTwoCards = new Deck();
 
-	public Hand(ArrayList<Card> setCards) {
-		this.CardsInHand = setCards;
-	}
-
 	public Hand(Deck d) {
 		ArrayList<Card> Import = new ArrayList<Card>();
 		for (int x = 0; x < 5; x++) {
@@ -46,7 +42,10 @@ public class Hand {
 		// including combos from jokers
 		int cardNo = 0;		
 		for (Card c : this.getCards()) {
-			playerHand = explodeHands(playerHand, cardNo);
+			//we should check for joker here and then explode;
+			if(c.getRank() == eRank.JOKER ){
+				playerHand = explodeHands(playerHand, cardNo);
+			}
 			cardNo++;
 		}
 		
@@ -57,6 +56,7 @@ public class Hand {
 		
 		//evaluates every possible hand
 		for(Hand h : playerHand) {
+			// SOMETING GOES WRONG HERE I THINK??? IS HAND ACTUALLY A HAND?!
 			h.EvalHand();
 		}
 		
@@ -78,31 +78,23 @@ public class Hand {
 		
 		for(Hand h : playerHands) {
 			ArrayList<Card> cards = h.getCards();
-			if(cards.get(cardNo).getRank() == eRank.JOKER) {
-				
-				for(Card jokerSub : fiftyTwoCards.getCards()) {
-					ArrayList<Card> subCards = new ArrayList<Card>(); // new array for joker sub
-					subCards.add(jokerSub); // add the joker sub to the hand
+			for(Card jokerSub : fiftyTwoCards.getCards()) {
+				ArrayList<Card> subCards = new ArrayList<Card>(); // new array for joker sub
+				subCards.add(jokerSub); // add the joker sub to the hand
 
-					// add the non-jokers to the hand with the joker sub
-					for (int a = 0; a < 5; a++) {
-						if (cardNo != a) {
-							subCards.add(h.getCards().get(a));
-						}
+				// add the non-jokers to the hand with the joker sub
+				for (int a = 0; a < 5; a++) {
+					if (cardNo != a) {
+						subCards.add(h.getCards().get(a));
 					}
-					Hand subHand = new Hand(subCards); // new hand with the joker sub
-					
-					// add the new hand to the list of possible hands
-					possibleHands.add(subHand); 
 				}
-			} 
-			// if the hand in question does not have jokers, 
-			// add it back into the list of possible hands
-			else {
-				possibleHands.add(h);
+				Hand subHand = new Hand(new Deck()); // new hand with the joker sub
+				subHand.CardsInHand = subCards;
+				
+				// add the new hand to the list of possible hands
+				possibleHands.add(subHand); 
 			}
 		}
-		
 		return possibleHands;
 	}
 

@@ -19,9 +19,9 @@ public class PlayHand {
 				System.out.println(h.toString());
 				System.out.println("");
 				h.EvalHand();
-				if(h.getNatural() == 1){
+				/*if(h.getNatural() == 1){
 					h.EvalHand(h.getCards());
-				}
+				}*/
 				Hands.add(h);
 			}
 			Collections.sort(Hands, Hand.HandRank);
